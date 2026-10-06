@@ -1,0 +1,68 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Check release metadata against tag
+        # An immutable PyPI version must refer to its matching public source tag.
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import tomllib
+
+          project = tomllib.loads(Path('pyproject.toml').read_text())['project']
+          if os.environ['GITHUB_REF_NAME'] != f"v{project['version']}":
+              raise SystemExit('Release tag does not match package version')
+          if not project.get('license') or not Path('LICENSE').is_file():
+              raise SystemExit('An approved open source license is required')
+          if not project.get('urls', {}).get('Source'):
+              raise SystemExit('A public source repository URL is required')
+          PY
+      - name: Install development dependencies
+        run: python3 -m pip install '.[dev]'
+      - name: Validate package
+        run: |
+          python3 -m ruff check src tests
+          python3 -m ruff format --check src tests
+          python3 -m pytest tests
+          python3 -m build
+          python3 -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+      - name: Publish using Trusted Publishing
+        # Match the repository, publish.yml and pypi environment on PyPI.
+        uses: pypa/gh-action-pypi-publish@release/v1

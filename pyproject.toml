@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=78.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aioelecway"
+version = "0.1.0"
+description = "Asynchronous local Elecway energy storage telemetry client"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
+dependencies = ["aiohttp>=3.13,<4", "yarl>=1.17,<2"]
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "pytest>=8", "pytest-asyncio>=1", "ruff>=0.14", "twine>=6"]
+
+[project.urls]
+Source = "https://github.com/Elecway001/aioelecway-ha"
+Issues = "https://github.com/Elecway001/aioelecway-ha/issues"
+
+[tool.setuptools.package-data]
+aioelecway = ["py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]

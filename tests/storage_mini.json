@@ -1,0 +1,22 @@
+{
+  "timestamp": 1789800833663,
+  "payload": {
+    "timestamp": 1789800833663,
+    "protocolVer": "1.1",
+    "outputPower": 797.3,
+    "pv": {
+      "power": 803,
+      "dailyGen": 0.74,
+      "totalGen": 1.72
+    },
+    "battery": {
+      "batteryPower": -3.2,
+      "batteryTotalSOC": 99,
+      "batteryDailyCharge": 0.07,
+      "batteryTotalCharge": 1.05,
+      "batteryDailyDischarge": 0.06,
+      "batteryTotalDischarge": 0.06
+    }
+  },
+  "topic": "/S3-20-EW02-08/ES25082799999/event/storage/mini/post"
+}
