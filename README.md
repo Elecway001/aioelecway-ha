@@ -4,7 +4,7 @@ Asynchronous Python client for local Elecway energy storage telemetry. The
 library has no Home Assistant dependency and uses a caller-owned `aiohttp`
 session. It only reads telemetry and does not change device settings.
 
-Selected publication repository: <https://github.com/Elecway001/aioelecway-ha>.
+Source repository: <https://github.com/Elecway001/aioelecway-ha>.
 The distribution name remains `aioelecway` and the import is `import aioelecway`.
 
 ## Requirements
@@ -19,10 +19,17 @@ The native Home Assistant integration was tested on 2026-09-29 with model
 `S3-20-EW02-08`. Compatibility with other models or a minimum firmware version
 has not yet been established.
 
+## Installation
+
+Version `0.1.0` is available on [PyPI](https://pypi.org/project/aioelecway/0.1.0/):
+
+```sh
+python3 -m pip install 'aioelecway==0.1.0'
+```
+
 ## Development installation
 
-Version `0.1.0` is being prepared for publication. Until a PyPI release is
-available, install from the package directory:
+To develop the library, install from the package directory:
 
 ```sh
 python3 -m pip install -e '.[dev]'
