@@ -28,6 +28,22 @@ class StorageData:
     model: str
     telemetry: Telemetry
 
+    @property
+    def rated_power(self) -> int | None:
+        """Return S2/S3 rated power in W, or None for other model families."""
+        if not self.model.startswith(("S2-", "S3-")):
+            return None
+        # DC models encode hundreds of watts in their final model segment.
+        power_code = self.model.rsplit("-", 1)[-1]
+        if power_code.isascii() and power_code.isdigit():
+            try:
+                power = int(power_code)
+            except ValueError:
+                return 800
+            if power > 0:
+                return power * 100
+        return 800
+
 
 def _number(value: object) -> float | None:
     """Reject nonnumeric and nonfinite values at the protocol boundary."""

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aioelecway"
-version = "0.1.0"
+version = "0.1.1"
 description = "Asynchronous local Elecway energy storage telemetry client"
 readme = "README.md"
 license = "Apache-2.0"

@@ -28,6 +28,39 @@ def test_recorded_units(report: dict) -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("model", "expected"),
+    [
+        pytest.param("S3-20-EW02-08", 800, id="s3-800w"),
+        pytest.param("S3-20-EW02-10", 1000, id="s3-1000w"),
+        pytest.param("S2-25-TW01-30", 3000, id="s2-3000w"),
+        pytest.param("S2-25-TW01-10", 1000, id="s2-1000w"),
+        pytest.param("S3-20-EW02-8", 800, id="single-digit"),
+        pytest.param("S3-20-EW02-0010", 1000, id="leading-zeroes"),
+        pytest.param("S3-20-EW02-", 800, id="empty-code"),
+        pytest.param("S2-", 800, id="missing-model-segments"),
+        pytest.param("S3-20-EW02", 800, id="missing-power-code"),
+        pytest.param("S3-20-EW02-00", 800, id="zero"),
+        pytest.param("S2-25-TW01-invalid", 800, id="invalid-code"),
+        pytest.param("S3-20-EW02-+10", 800, id="signed-code"),
+        pytest.param("S3-20-EW02-10.0", 800, id="decimal-code"),
+        pytest.param("S3-20-EW02- 10", 800, id="whitespace"),
+        pytest.param("S3-20-EW02-１０", 800, id="non-ascii-digits"),
+        pytest.param("S3-20-EW02-" + "1" * 5000, 800, id="oversized-code"),
+        pytest.param("S-A-10", None, id="other-series"),
+        pytest.param("UNKNOWN", None, id="unknown-model"),
+        pytest.param("S3", None, id="missing-series-separator"),
+    ],
+)
+def test_rated_power(report: dict, model: str, expected: int | None) -> None:
+    """Model metadata follows the DC naming rule without changing telemetry."""
+    report["topic"] = f"/{model}/{SERIAL}/event/storage/mini/post"
+    data = parse_message(report)
+    assert data is not None
+    assert data.rated_power == expected
+    assert data.telemetry.output_power == 797.3
+
+
 def test_full_report_clears_missing_values(report: dict) -> None:
     """A missing field in a full report must not become zero or stale data."""
     previous = parse_message(report)

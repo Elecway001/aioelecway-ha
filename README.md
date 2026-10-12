@@ -21,10 +21,10 @@ has not yet been established.
 
 ## Installation
 
-Version `0.1.0` is available on [PyPI](https://pypi.org/project/aioelecway/0.1.0/):
+Install version `0.1.1` from [PyPI](https://pypi.org/project/aioelecway/0.1.1/):
 
 ```sh
-python3 -m pip install 'aioelecway==0.1.0'
+python3 -m pip install 'aioelecway==0.1.1'
 ```
 
 ## Development installation
@@ -59,6 +59,7 @@ async def main() -> None:
         try:
             data = await client.connect()
             print(data.serial_number, data.model, data.telemetry)
+            print("Rated power (W):", data.rated_power)
             async for update in client.updates():
                 if update is None:
                     print("Device unavailable; reconnecting")
@@ -86,6 +87,16 @@ The caller remains responsible for closing its `ClientSession`.
 Power is expressed in W, energy in kWh, and state of charge in percent. Missing
 or invalid measurements remain `None`; they are not replaced with zero.
 Battery power keeps the sign reported by the device.
+
+Since version `0.1.1`, `StorageData.rated_power` provides rated power in W for
+`S2-` and `S3-` models. The final hyphen-separated segment is a positive ASCII
+integer representing hundreds of watts: `S3-20-EW02-08` is 800 W and
+`S3-20-EW02-10` is 1000 W. Missing, invalid, or zero power codes fall back to
+800 W. Other model families return `None`.
+
+This property derives model metadata; it does not measure power or change
+device settings. The parsing rule alone does not establish device or firmware
+compatibility.
 
 | Field | Unit |
 | --- | --- |
